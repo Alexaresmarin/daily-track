@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
+// vite-plugin-pwa@1.2.0 peer dep is vite ^7 — installed with --legacy-peer-deps.
+// Works in practice; official Vite 8 support tracked in issue #7.
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -12,9 +15,9 @@ export default defineConfig({
       manifest: {
         name: 'Daily Track',
         short_name: 'Daily Track',
-        description: 'Personal daily habit tracker',
-        theme_color: '#000000',
-        background_color: '#000000',
+        description: 'Minimal daily habit tracker',
+        theme_color: '#0a0a0a',
+        background_color: '#0a0a0a',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',

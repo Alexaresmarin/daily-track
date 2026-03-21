@@ -3,9 +3,12 @@ import { persist } from 'zustand/middleware'
 import { nanoid } from 'nanoid'
 import type { Habit, CompletionLog, HabitFrequency } from './types'
 
-// Returns today's date as 'YYYY-MM-DD'
+// Returns a local 'YYYY-MM-DD' string — NOT UTC, so it matches the user's actual day
 export function toDateString(date: Date = new Date()): string {
-  return date.toISOString().slice(0, 10)
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
 // Returns the day-of-week index for a given date string (0 = Sun, 6 = Sat)
@@ -62,12 +65,15 @@ export function getStreak(habit: Habit, logs: CompletionLog[]): number {
     if (!isDueOn(habit, dateStr)) continue // skip non-due days
 
     if (habit.frequency.type === 'times_per_week') {
-      // For times_per_week: check if the weekly target was met for that week
       const weekDates = getWeekDates(dateStr)
       const completionsThisWeek = weekDates.filter(wd => isCompletedOn(logs, habit.id, wd)).length
+      const isCurrentWeek = weekDates.includes(toDateString())
       if (completionsThisWeek >= habit.frequency.times) {
-        // Only count each week once (when we hit Monday of that week)
+        // Count each week once (when we hit Monday of that week)
         if (dateStr === weekDates[0]) streak++
+        continue
+      } else if (isCurrentWeek) {
+        // Grace: current week is still in progress, don't break the streak
         continue
       } else {
         break

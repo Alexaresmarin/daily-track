@@ -11,6 +11,18 @@ import type { Habit, CompletionLog } from './types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
+// Returns the last N dates (relative to today) that fall on any of the given days-of-week
+function lastOccurrencesOf(dows: number[], n: number): string[] {
+  const result: string[] = []
+  const today = new Date()
+  for (let i = 0; result.length < n; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    if (dows.includes(d.getDay())) result.push(toDateString(d))
+  }
+  return result
+}
+
 function makeHabit(overrides: Partial<Habit> = {}): Habit {
   return {
     id: 'h1',
@@ -36,10 +48,25 @@ describe('toDateString', () => {
     expect(toDateString(new Date('2026-03-15T10:00:00'))).toBe('2026-03-15')
   })
 
-  it('uses local time, not UTC', () => {
-    // Passing a concrete local date — should not shift
-    const d = new Date(2026, 2, 15) // month is 0-indexed
-    expect(toDateString(d)).toBe('2026-03-15')
+  it('uses local date, not UTC (catches midnight boundary regression)', () => {
+    // Set to 11pm local tonight. In zones west of UTC (e.g. America/New_York, UTC-5),
+    // 11pm local = 4am UTC next day, so toISOString().slice(0,10) would return tomorrow.
+    // Our local implementation must return today's local date regardless.
+    // CI runs with TZ=America/New_York to guarantee a negative UTC offset.
+    const d = new Date()
+    d.setHours(23, 0, 0, 0)
+    const expected = [
+      d.getFullYear(),
+      String(d.getMonth() + 1).padStart(2, '0'),
+      String(d.getDate()).padStart(2, '0'),
+    ].join('-')
+    expect(toDateString(d)).toBe(expected)
+    // getTimezoneOffset() is positive for zones west of UTC (UTC-x).
+    // Only in those zones does 11pm local spill into the next UTC day.
+    const utcDate = d.toISOString().slice(0, 10)
+    if (new Date().getTimezoneOffset() > 0) {
+      expect(utcDate).not.toBe(expected)
+    }
   })
 })
 
@@ -145,16 +172,10 @@ describe('getStreak — daily', () => {
 
 describe('getStreak — days_of_week', () => {
   it('skips non-due days when counting streak', () => {
-    // Mon + Wed only
+    // Mon + Wed only — use dynamic dates so this never time-bombs
     const habit = makeHabit({ frequency: { type: 'days_of_week', days: [1, 3] } })
-    // Complete the last 4 Mon/Wed occurrences
-    const logs: CompletionLog[] = [
-      { habitId: 'h1', date: '2026-03-16' }, // Mon
-      { habitId: 'h1', date: '2026-03-18' }, // Wed
-      { habitId: 'h1', date: '2026-03-09' }, // Mon
-      { habitId: 'h1', date: '2026-03-11' }, // Wed
-    ]
-    // Streak should be at least 4 (all four due-days completed with no gap)
+    const recentDates = lastOccurrencesOf([1, 3], 4) // last 4 Mon or Wed occurrences
+    const logs: CompletionLog[] = recentDates.map(date => ({ habitId: 'h1', date }))
     expect(getStreak(habit, logs)).toBeGreaterThanOrEqual(4)
   })
 })

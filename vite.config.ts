@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -6,6 +6,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 // vite-plugin-pwa@1.2.0 peer dep is vite ^7 — installed with --legacy-peer-deps.
 // Works in practice; official Vite 8 support tracked in issue #7.
 export default defineConfig({
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+  },
   plugins: [
     tailwindcss(),
     react(),

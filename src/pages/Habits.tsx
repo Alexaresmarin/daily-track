@@ -1,23 +1,15 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, ChevronRight } from 'lucide-react'
-import { useHabitStore, frequencyLabel } from '../store/useHabitStore'
+import { Plus } from 'lucide-react'
+import { useHabitStore } from '../store/useHabitStore'
 import HabitSheet from '../components/HabitSheet'
+import SwipeableHabitRow from '../components/SwipeableHabitRow'
 import type { Habit } from '../store/types'
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.2 } },
   exit: { opacity: 0, y: -10, transition: { duration: 0.15 } },
-}
-
-const COLOR_DOT: Record<string, string> = {
-  violet: 'bg-violet-500',
-  blue: 'bg-blue-500',
-  green: 'bg-green-500',
-  orange: 'bg-orange-500',
-  pink: 'bg-pink-500',
-  red: 'bg-red-500',
 }
 
 export default function Habits() {
@@ -64,19 +56,11 @@ export default function Habits() {
         ) : (
           <div className="flex flex-col gap-2">
             {habits.map(habit => (
-              <button
+              <SwipeableHabitRow
                 key={habit.id}
-                onClick={() => openEdit(habit)}
-                className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 active:scale-[0.98] transition-transform text-left w-full"
-              >
-                <div className={`w-3 h-3 rounded-full shrink-0 ${COLOR_DOT[habit.color] ?? 'bg-gray-400'}`} />
-                <span className="text-xl leading-none">{habit.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{habit.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{frequencyLabel(habit.frequency)}</p>
-                </div>
-                <ChevronRight size={16} className="text-gray-400 shrink-0" />
-              </button>
+                habit={habit}
+                onEdit={() => openEdit(habit)}
+              />
             ))}
           </div>
         )}

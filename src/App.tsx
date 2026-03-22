@@ -8,7 +8,10 @@ import Stats from './pages/Stats'
 function AppRoutes() {
   const location = useLocation()
   return (
-    <div className="flex flex-col min-h-svh bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+    <div
+      className="flex flex-col min-h-svh bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >
       <main
         className="flex-1 overflow-y-auto"
         style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}

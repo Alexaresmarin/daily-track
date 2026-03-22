@@ -8,15 +8,14 @@ const pageVariants = {
   exit: { opacity: 0, y: -10, transition: { duration: 0.15 } },
 }
 
-const dateLabel = new Date().toLocaleDateString('en-US', {
-  weekday: 'long',
-  month: 'long',
-  day: 'numeric',
-})
-
 export default function Today() {
   const { habits, logs, toggleCompletion } = useHabitStore()
   const today = toDateString()
+  const dateLabel = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
 
   const dueHabits = habits.filter(isDueToday)
   const completedCount = dueHabits.filter((h) => isCompletedOn(logs, h.id, today)).length
@@ -52,9 +51,19 @@ export default function Today() {
 
       {dueHabits.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-          <span className="text-4xl">🌱</span>
-          <p className="font-medium text-gray-900 dark:text-gray-100">No habits yet</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Add some habits to get started</p>
+          {habits.length === 0 ? (
+            <>
+              <span className="text-4xl">🌱</span>
+              <p className="font-medium text-gray-900 dark:text-gray-100">No habits yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Add some habits to get started</p>
+            </>
+          ) : (
+            <>
+              <span className="text-4xl">☀️</span>
+              <p className="font-medium text-gray-900 dark:text-gray-100">Nothing due today</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Enjoy your rest day</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="flex flex-col gap-2">

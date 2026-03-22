@@ -5,6 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // vite-plugin-pwa@1.2.0 peer dep is vite ^7 — installed with --legacy-peer-deps.
 // Works in practice; official Vite 8 support tracked in issue #7.
+// PNG icons (pwa-192x192, pwa-512x512, apple-touch-icon) are pre-generated static
+// assets committed to public/. To regenerate: use sharp or any SVG→PNG tool against
+// public/favicon.svg at the required sizes (192, 512, 180).
 export default defineConfig({
   test: {
     environment: 'node',

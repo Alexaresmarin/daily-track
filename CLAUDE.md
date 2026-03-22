@@ -6,3 +6,4 @@
 - Branch naming: `feat/<issue-number>-<slug>`, `fix/<issue-number>-<slug>`, `chore/<slug>`
 - Always create feature branches from `dev` and open PRs targeting `dev`
 - Never push commits or create PRs without explicit user approval — always stop and ask for review first
+- Always add a label when creating PRs: `feat` for features, `bug` for bug fixes, `chore` for maintenance, `documentation` for docs

@@ -64,6 +64,9 @@ export default function SwipeableHabitRow({ habit, onEdit }: Props) {
           dragMomentum={false}
           onDragEnd={handleDragEnd}
           onClick={confirming ? undefined : onEdit}
+          onKeyDown={confirming ? undefined : (e) => { if (e.key === 'Enter' || e.key === ' ') onEdit() }}
+          role="button"
+          tabIndex={0}
           className="relative flex items-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-left w-full cursor-pointer"
         >
           <div className={`w-3 h-3 rounded-full shrink-0 ${COLOR_DOT[habit.color] ?? 'bg-gray-400'}`} />

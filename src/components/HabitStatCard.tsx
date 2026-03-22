@@ -24,6 +24,10 @@ type Cell = {
 function buildCells(habit: Habit, logs: ReturnType<typeof useHabitStore.getState>['logs'], filter: StatFilter): Cell[] {
   const todayStr = toDateString()
   const today = new Date(todayStr + 'T12:00:00')
+  // For times_per_week habits, isDueOn returns true every day, which would mark
+  // all uncompleted days as missed. Instead, only show actual completions as bright.
+  const dueOn = (dateStr: string) =>
+    habit.frequency.type === 'times_per_week' ? false : isDueOn(habit, dateStr)
 
   if (filter === '7d') {
     const cells: Cell[] = []
@@ -33,7 +37,7 @@ function buildCells(habit: Habit, logs: ReturnType<typeof useHabitStore.getState
       const dateStr = toDateString(d)
       cells.push({
         dateStr,
-        due: isDueOn(habit, dateStr),
+        due: dueOn(dateStr),
         completed: isCompletedOn(logs, habit.id, dateStr),
         isFuture: false,
         beforeCreation: dateStr < habit.createdAt,
@@ -64,7 +68,7 @@ function buildCells(habit: Habit, logs: ReturnType<typeof useHabitStore.getState
     const dateStr = toDateString(cur)
     cells.push({
       dateStr,
-      due: isDueOn(habit, dateStr),
+      due: dueOn(dateStr),
       completed: isCompletedOn(logs, habit.id, dateStr),
       isFuture: dateStr > todayStr,
       beforeCreation: dateStr < habit.createdAt,
@@ -115,7 +119,9 @@ export default function HabitStatCard({ habit, filter }: Props) {
         </div>
         <div className="flex flex-col items-end shrink-0">
           <span className="text-2xl font-bold text-white leading-none">{streak}</span>
-          <span className="text-[10px] text-white/60">day streak</span>
+          <span className="text-[10px] text-white/60">
+            {habit.frequency.type === 'times_per_week' ? 'week streak' : 'day streak'}
+          </span>
         </div>
       </div>
 

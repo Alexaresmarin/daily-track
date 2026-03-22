@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, Reorder, useDragControls } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { useHabitStore } from '../store/useHabitStore'
 import HabitSheet from '../components/HabitSheet'
@@ -12,8 +12,17 @@ const pageVariants = {
   exit: { opacity: 0, y: -10, transition: { duration: 0.15 } },
 }
 
+function ReorderRow({ habit, onEdit }: { habit: Habit; onEdit: () => void }) {
+  const controls = useDragControls()
+  return (
+    <Reorder.Item value={habit} dragListener={false} dragControls={controls}>
+      <SwipeableHabitRow habit={habit} onEdit={onEdit} dragControls={controls} />
+    </Reorder.Item>
+  )
+}
+
 export default function Habits() {
-  const { habits } = useHabitStore()
+  const { habits, reorderHabits } = useHabitStore()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editing, setEditing] = useState<Habit | undefined>()
 
@@ -54,15 +63,16 @@ export default function Habits() {
             <p className="text-sm text-gray-500 dark:text-gray-400">Tap Add to create your first habit</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <Reorder.Group
+            axis="y"
+            values={habits}
+            onReorder={reorderHabits}
+            className="flex flex-col gap-2"
+          >
             {habits.map(habit => (
-              <SwipeableHabitRow
-                key={habit.id}
-                habit={habit}
-                onEdit={() => openEdit(habit)}
-              />
+              <ReorderRow key={habit.id} habit={habit} onEdit={() => openEdit(habit)} />
             ))}
-          </div>
+          </Reorder.Group>
         )}
       </motion.div>
 

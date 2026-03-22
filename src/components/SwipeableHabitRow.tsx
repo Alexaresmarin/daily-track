@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
-import { Trash2, ChevronRight } from 'lucide-react'
+import type { DragControls } from 'framer-motion'
+import { Trash2, ChevronRight, GripVertical } from 'lucide-react'
 import { useHabitStore, frequencyLabel } from '../store/useHabitStore'
 import type { Habit } from '../store/types'
 
@@ -18,9 +19,10 @@ const THRESHOLD = -60
 type Props = {
   habit: Habit
   onEdit: () => void
+  dragControls?: DragControls
 }
 
-export default function SwipeableHabitRow({ habit, onEdit }: Props) {
+export default function SwipeableHabitRow({ habit, onEdit, dragControls }: Props) {
   const { deleteHabit } = useHabitStore()
   const [confirming, setConfirming] = useState(false)
   const x = useMotionValue(0)
@@ -67,8 +69,16 @@ export default function SwipeableHabitRow({ habit, onEdit }: Props) {
           onKeyDown={confirming ? undefined : (e) => { if (e.key === 'Enter' || e.key === ' ') onEdit() }}
           role="button"
           tabIndex={0}
-          className="relative flex items-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-left w-full cursor-pointer"
+          className="relative flex items-center gap-2 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-left w-full cursor-pointer"
         >
+          {dragControls && (
+            <div
+              onPointerDown={(e) => { e.preventDefault(); dragControls.start(e) }}
+              className="text-gray-300 dark:text-gray-600 cursor-grab active:cursor-grabbing touch-none shrink-0"
+            >
+              <GripVertical size={18} />
+            </div>
+          )}
           <div className={`w-3 h-3 rounded-full shrink-0 ${COLOR_DOT[habit.color] ?? 'bg-gray-400'}`} />
           <span className="text-xl leading-none">{habit.emoji}</span>
           <div className="flex-1 min-w-0">

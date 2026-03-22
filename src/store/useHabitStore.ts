@@ -113,6 +113,7 @@ type HabitStore = {
   addHabit: (habit: Omit<Habit, 'id' | 'createdAt'>) => void
   updateHabit: (id: string, updates: Partial<Omit<Habit, 'id' | 'createdAt'>>) => void
   deleteHabit: (id: string) => void
+  reorderHabits: (habits: Habit[]) => void
 
   toggleCompletion: (habitId: string, date: string) => void
 }
@@ -141,6 +142,8 @@ export const useHabitStore = create<HabitStore>()(
           habits: state.habits.filter((h) => h.id !== id),
           logs: state.logs.filter((l) => l.habitId !== id),
         })),
+
+      reorderHabits: (habits) => set({ habits }),
 
       toggleCompletion: (habitId, date) =>
         set((state) => {

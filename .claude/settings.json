@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // empty'); case \"$file\" in *.ts|*.tsx) cd /Users/alexares/dev/personal/daily-track && npx tsc --noEmit 2>&1 | head -20 ;; esac",
+            "async": true,
+            "statusMessage": "Type checking..."
+          },
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // empty'); case \"$file\" in *.ts|*.tsx|*.css) cd /Users/alexares/dev/personal/daily-track && npx eslint \"$file\" --max-warnings=0 2>&1 | tail -10 ;; esac",
+            "async": true,
+            "statusMessage": "Linting..."
+          }
+        ]
+      }
+    ]
+  }
+}

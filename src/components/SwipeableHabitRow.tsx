@@ -66,7 +66,12 @@ export default function SwipeableHabitRow({ habit, onEdit, dragControls }: Props
           dragMomentum={false}
           onDragEnd={handleDragEnd}
           onClick={confirming ? undefined : onEdit}
-          onKeyDown={confirming ? undefined : (e) => { if (e.key === 'Enter' || e.key === ' ') onEdit() }}
+          onKeyDown={confirming ? undefined : (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onEdit()
+            }
+          }}
           role="button"
           tabIndex={0}
           className="relative flex items-center gap-2 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-left w-full cursor-pointer"

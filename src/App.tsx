@@ -14,7 +14,7 @@ function AppRoutes() {
     >
       <main
         className="flex-1 overflow-y-auto"
-        style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}
+        style={{ paddingBottom: '4rem' }}
       >
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
